@@ -1,7 +1,7 @@
 import React,{Component} from 'react'
-import {Card, CardSection, Input, Button} from './common'
+import {View,Text} from 'react-native'
+import {Card, CardSection, Input, Button,Spinner} from './common'
 import {connect} from 'react-redux'
-
 import {emailChanged, passwordChanged , loginUser} from '../actions'
 
 
@@ -15,6 +15,30 @@ class LoginForm extends Component{
 	onButtonPress(){
 		const {email,password} = this.props
 		this.props.loginUser({email, password})
+	}
+	toggleButton(){
+		if(this.props.loading){
+			return (
+				<Spinner size ='large'>
+				</Spinner>
+			)
+		}else {
+			return (
+				<Button onPress = {this.onButtonPress.bind(this)}>Login</Button>
+			)
+		}
+	}
+
+	renderError(){
+		if(this.props.errmsg){
+			return(
+				<View style ={{backgroundColor:'white'}}>
+					<Text style = {styles.errorTextStyle}>
+						{this.props.errmsg}
+					</Text>
+				</View>
+			)
+		}
 	}
 	render(){
 		return (
@@ -33,20 +57,28 @@ class LoginForm extends Component{
 						value ={this.props.password}>
 					</Input>
 				</CardSection>
-
+				{this.renderError()}
 				<CardSection>
-					<Button onPress = {this.onButtonPress.bind(this)}>Login</Button>
+					{this.toggleButton()}
 				</CardSection>
 			</Card>
 		)
 	}
 }
+const styles = {
+	errorTextStyle:{
+		fontSize:20,
+		alignSelf:'center',
+		color: 'red'
+	}
+}
+
 // state is a global variable for the application
-const mapStateToProps =(state)=>{
+const mapStateToProps =({auth})=>{
+	const {email, password,errmsg,loading} = auth
 	return {
 		// auth because it is what the reducer is called
-		email: state.auth.email,
-		password: state.auth.password
+		email,password,errmsg,loading
 	}
 }
 // it is null because we are not binding anything to state

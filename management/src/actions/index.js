@@ -1,5 +1,12 @@
 import firebase from 'firebase'
-import {EMAIL_CHANGED,PASSWORD_CHANGED,LOGIN_USER_SUCCESS} from './types.js'
+import {Actions} from 'react-native-router-flux'
+import {
+	EMAIL_CHANGED,
+	PASSWORD_CHANGED,
+	LOGIN_USER_SUCCESS,
+	LOGIN_USER_FAILED,
+	LOGIN_USER
+} from './types.js'
 
 
 export const emailChanged = (text) => {
@@ -15,20 +22,27 @@ export const passwordChanged = (text) => {
 		payload: text
 	}
 }
-// TODO: need to handle error if password is incorrect and refactor
-//		 login success
+
 export const loginUser = ({email,password}) => {
-	
 	return (dispatch)=>{
+		dispatch({type:LOGIN_USER})
 		firebase.auth().signInWithEmailAndPassword(email, password)
-			.then((user) => {
-				dispatch({type:LOGIN_USER_SUCCESS,user:user})
-			})
+			.then(user => loginUserSuccess(dispatch,user))
 			.catch(()=>{
 				firebase.auth().createUserWithEmailAndPassword(email,password)
-					.then((user) => {
-						dispatch({type:LOGIN_USER_SUCCESS,user:user})
+					.then((user) => loginUserSuccess(dispatch,user))
+					.catch(()=>{
+						loginUserFailed(dispatch)
 					})
 			})
 	}
+}
+const loginUserFailed = (dispatch)=> {
+	dispatch({type: LOGIN_USER_FAILED})
+}
+const loginUserSuccess = (dispatch, user)=> {
+	dispatch({
+		type:LOGIN_USER_SUCCESS,payload: user
+	})
+	Actions.main()
 }
