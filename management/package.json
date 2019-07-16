@@ -10,6 +10,7 @@
   "dependencies": {
     "eslint-plugin-react": "^7.14.2",
     "firebase": "^6.2.4",
+    "lodash": "^4.17.14",
     "react": "16.8.6",
     "react-native": "0.60.0",
     "react-native-router-flux": "^4.0.6",
